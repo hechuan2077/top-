@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>河川 · AI × 审计</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --card: #161616;
+      --card-hover: #1e1e1e;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.18);
+      --text-primary: #f0f0f0;
+      --text-secondary: #888;
+      --text-muted: #555;
+      --accent: #fff;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── 顶部导航 ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+    }
+    nav .logo {
+      font-size: 15px; font-weight: 600; letter-spacing: 0.04em;
+      color: var(--text-primary);
+    }
+    nav .logo span { color: var(--text-secondary); font-weight: 400; }
+    nav .nav-links { display: flex; gap: 28px; }
+    nav .nav-links a {
+      font-size: 13px; color: var(--text-secondary); text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav .nav-links a:hover { color: var(--text-primary); }
+
+    /* ── 主体容器 ── */
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+    }
+
+    /* ── Hero 区域 ── */
+    .hero {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+      padding: 60px 0 72px;
+    }
+
+    .hero-name {
+      font-size: 48px; font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .hero-tagline {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 380px;
+      line-height: 1.7;
+    }
+    .hero-tagline em {
+      font-style: normal;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-hover);
+    }
+
+    /* 分隔线 */
+    .divider {
+      width: 40px; height: 1px;
+      background: var(--border);
+      margin: 32px auto;
+    }
+
+    /* ── 分类卡片区 ── */
+    .section-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: background 0.18s, border-color 0.18s, transform 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .card-title {
+      font-size: 14px; font-weight: 600;
+      color: var(--text-primary); letter-spacing: -0.01em;
+    }
+    .card-desc {
+      font-size: 12px; color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .card-tag {
+      align-self: flex-start;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: auto;
+    }
+    .card-tag.soon { color: #555; background: rgba(255,255,255,0.03); }
+
+    /* ── 底部 ── */
+    footer {
+      text-align: center;
+      padding: 48px 24px 32px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 80px;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text-secondary); }
+
+    @media (max-width: 480px) {
+      nav { padding: 16px 20px; }
+      nav .nav-links { gap: 18px; }
+      main { padding: 100px 16px 60px; }
+      .hero-name { font-size: 32px; }
+      .cards-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<nav>
+  <div class="logo">河川 <span>/ AI × 审计</span></div>
+  <div class="nav-links">
+    <a href="#">首页</a>
+    <a href="#">文档</a>
+    <a href="#">关于</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1 class="hero-name">河川</h1>
+    <p class="hero-tagline">
+      不能听命于自己者，就要受命于他人。
+    </p>
+
+    <div class="divider"></div>
+    <p class="section-label">探索内容</p>
+  </div>
+
+  <!-- 分类卡片 -->
+  <div class="cards-grid">
+
+    <a class="card" href="#">
+      <div class="card-icon">📄</div>
+      <div class="card-title">文档</div>
+      <div class="card-desc">审计底稿模板、AI 提示词库、工作流说明。</div>
+      <span class="card-tag">Docs</span>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">教程</div>
+      <div class="card-desc">从零学 AI 审计，每篇解决一个实际问题。</div>
+      <span class="card-tag">Tutorial</span>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">工具</div>
+      <div class="card-desc">凭证拆分、底稿生成等自研小工具合集。</div>
+      <span class="card-tag">Tools</span>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-icon">⭐</div>
+      <div class="card-title">测评</div>
+      <div class="card-desc">各类 AI 产品在审计场景下的实测横评。</div>
+      <span class="card-tag">Review</span>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-icon">📓</div>
+      <div class="card-title">笔记</div>
+      <div class="card-desc">碎片化思考、行业观察与个人经验沉淀。</div>
+      <span class="card-tag soon">Soon</span>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-icon">💬</div>
+      <div class="card-title">关于我</div>
+      <div class="card-desc">审计人 + AI 折腾党，热衷用技术提效。</div>
+      <span class="card-tag">About</span>
+    </a>
+
+  </div>
+</main>
+
+<!-- 底部 -->
+<footer>
+  <p>© 2026 河川 · Built with curiosity &amp; coffee &nbsp;·&nbsp; <a href="mailto:">联系我</a></p>
+</footer>
+
+</body>
+</html>
